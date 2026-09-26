@@ -71,6 +71,6 @@ int do_job(int rows1, int cols1, int cols2, int forever) {
     free(matrix1);
     free(matrix2);
     free(result);
-    return (int)(total_time * 1000.0f);
+    return (int)(total_time * 1000000.0f);
 }
 
