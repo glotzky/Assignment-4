@@ -36,6 +36,7 @@ void display_matrix(int rows, int cols, int *matrix) {
 }
 
 int do_job(int rows1, int cols1, int cols2, int forever) {
+    // Allocate A, B, and the result matrix once and reuse them.
     int *matrix1 = malloc(rows1 * cols1 * sizeof(int));
     int *matrix2 = malloc(cols1 * cols2 * sizeof(int));
     int *result = malloc(rows1 * cols2 * sizeof(int));
@@ -53,14 +54,23 @@ int do_job(int rows1, int cols1, int cols2, int forever) {
     generate_random_matrix(cols1, cols2, matrix2);
     printf("Matrix 2 done.\n");
 
+    float total_time = 0.0f;
     do {
+        struct timespec t0, t1;
+        // Time only the matrix multiplication, not matrix generation.
+        timespec_get(&t0, TIME_UTC);
         multiply_matrices(rows1, cols1, matrix1,
                           cols1, cols2, matrix2, result);
+        timespec_get(&t1, TIME_UTC);
+
+        float dns = (float)(t1.tv_nsec - t0.tv_nsec) / 1000000000.0f;
+        float ds = (float)(t1.tv_sec - t0.tv_sec);
+        total_time = dns + ds;
     } while (forever);
 
     free(matrix1);
     free(matrix2);
     free(result);
-    return 0;
+    return (int)(total_time * 1000.0f);
 }
 
